@@ -1,0 +1,26 @@
+{
+  "name": "openhosta.js",
+  "version": "0.1.0",
+  "description": "TypeScript port of the OpenHosta meta prompt utilities",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "example:meta-prompt": "npm run build && node examples/metaPromptExample.js",
+    "clean": "rm -rf dist",
+    "lint": "eslint .",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "nunjucks": "^3.2.4"
+  },
+  "devDependencies": {
+    "@types/nunjucks": "^3.2.6",
+    "typescript": "^5.4.0"
+  }
+}

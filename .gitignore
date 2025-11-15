@@ -1,0 +1,22 @@
+# Node / TypeScript artifacts
+node_modules/
+dist/
+coverage/
+.nyc_output/
+
+# Environment & editor junk
+.env
+.env.*
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Tooling
+.tmp/
+.idea/
+.vscode/
+
+# Misc cache
+*.tsbuildinfo
