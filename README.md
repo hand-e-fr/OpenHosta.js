@@ -60,6 +60,16 @@ const snippets = encodeFunction(analysis);
 
 The resulting snippets feed directly into `MetaPrompt` templates and keep the Python architecture (documentation, type definitions, argument/value breakdowns). As AST-based inspection lands, these helpers will populate automatically just like in the original library.
 
+## Why mirror the Python architecture?
+
+OpenHosta.js is intentionally a drop-in mental model for the Python project hosted at [hand-e-fr/OpenHosta](https://github.com/hand-e-fr/OpenHosta):
+
+- **Shared prompts & pipelines:** Both stacks must render the same meta-prompts and inspection snippets so the team can copy/paste experiments or tune prompts once and reuse them everywhere.
+- **Identical debugging UX:** Utilities such as `printLastPrompt`, env loading, and type conversion keep the same semantics (including Python-style type strings) so logs/screenshots/docs stay comparable.
+- **Co-maintenance:** By following the same file structure and naming, contributors familiar with the Python repo can navigate the JS port immediately and spot gaps via `PORTING_STATUS.md`.
+
+As we implement the remaining modules (inspection, pipelines, models), we keep parity first, then we can add JS-specific ergonomics once the reference behavior is matched.
+
 ## Next steps
 
 Short-term focus areas pulled from `PORTING_STATUS.md`:
