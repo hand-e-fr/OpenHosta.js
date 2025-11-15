@@ -4,7 +4,8 @@
 | Python module (OpenHosta/src/OpenHosta) | JS parity | Notes |
 | --- | --- | --- |
 | core/meta_prompt.py | ✅ Implemented in `src/OpenHosta/core/metaPrompt.ts` using nunjucks | Provides `MetaPrompt`, `EMULATE_META_PROMPT`, `USER_CALL_META_PROMPT` equivalents |
-| core/* (analizer, config, inspection, logger, pydantic_proxy, type_converter) | 🔄 Not started | Need translation strategies (nunjucks inspection, config loader, logging abstraction, runtime type checks) |
+| core/logger.py | ✅ Implemented in `src/OpenHosta/core/logger.ts` | Adds `printLastPrompt`, `printLastDecoding` with `hosta_inspection` contract |
+| core/* (analizer, config, inspection, pydantic_proxy, type_converter) | 🔄 Not started | Need translation strategies (nunjucks inspection, config loader, runtime type checks) |
 | asynchrone, exec, models, pipelines, semantics, utils | 🔄 Not started | Require deeper analysis of concurrency primitives, data models, pipeline orchestration |
 
 ## Key Differences & Limitations (MetaPrompt v0.1)
@@ -12,6 +13,7 @@
 - **Rendering signature:** Python exposes both `*args` and `**kwargs` when calling `Template.render`. In JS we can only accept a single context object (`Record<string, unknown>`). Callers that relied on positional argument unpacking will need to pass a single dictionary.
 - **Whitespace handling:** We emulate `textwrap.dedent` and the double-blank-line cleanup performed in Python. Edge cases where Python preserved leading/trailing blank lines may still differ slightly; tests should be added once more prompts are ported.
 - **Environment overrides:** Python forwards `*args/**kargs` to `jinja2.Template`. The JS port instead accepts an optional `env` (a `nunjucks.Environment`). Additional template-level toggles must be provided via that environment instance until we see concrete use cases.
+- **Inspection hooks:** Python functions receive rich objects via attributes. The TS helpers (`printLastPrompt`, `printLastDecoding`) rely on duck typing and will log fallback messages when the expected methods are missing; stricter typings may emerge once models/pipelines are ported.
 
 ## Action Plan
 1. **Stabilize MetaPrompt API**
