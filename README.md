@@ -9,6 +9,7 @@ Examples live in `examples/` and run via npm scripts (each re-builds before exec
 - `npm run example:config` – Creates a temporary `.env` file, calls `reloadDotenv`, and prints the resulting default model/pipeline configuration.
 - `npm run example:type-conversion` – Demonstrates `typeReturnedData`, `describeTypeAsSchema`, and unions with the new `TypeDescriptor` DSL.
 - `npm run example:logger` – Builds a synthetic `hosta_inspection` payload to show `printLastPrompt` and `printLastDecoding` output.
+- `npm run example:analyzer` – Demonstrates `setHostaSignature`, `hostaAnalyze`, `encodeFunction`, and post-processing via `typeReturnedData`.
 
 ## Configuration
 
@@ -37,6 +38,27 @@ console.log(values); // [1, 2, 3]
 ```
 
 When analyzers/pipelines are ported they'll produce descriptors automatically; until then, descriptors can be constructed manually for experiments.
+
+## Function analysis
+
+`src/OpenHosta/core/analyzer.ts` ports the Python inspection helpers. Because JavaScript lacks runtime type metadata, functions can expose a signature via `setHostaSignature`:
+
+```ts
+import { setHostaSignature, hostaAnalyze, encodeFunction } from "openhosta.js";
+
+function computeScores(items: number[]) { return items.map((x) => x * 2); }
+
+setHostaSignature(computeScores, {
+  doc: "Double every number in the list.",
+  args: [{ name: "items", type: { kind: "array", items: "number" } }],
+  type: { kind: "array", items: "number" }
+});
+
+const analysis = hostaAnalyze(computeScores, { args: { items: [1, 2, 3] } });
+const snippets = encodeFunction(analysis);
+```
+
+The resulting snippets feed directly into `MetaPrompt` templates and keep the Python architecture (documentation, type definitions, argument/value breakdowns). As AST-based inspection lands, these helpers will populate automatically just like in the original library.
 
 ## Next steps
 

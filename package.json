@@ -15,6 +15,7 @@
     "example:config": "npm run build && node examples/configExample.js",
     "example:type-conversion": "npm run build && node examples/typeConversionExample.js",
     "example:logger": "npm run build && node examples/loggerExample.js",
+    "example:analyzer": "npm run build && node examples/analyzerExample.js",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "test": "node --test"

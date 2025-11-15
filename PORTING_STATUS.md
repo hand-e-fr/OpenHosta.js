@@ -7,6 +7,7 @@
 | core/logger.py | ✅ Implemented in `src/OpenHosta/core/logger.ts` | Adds `printLastPrompt`, `printLastDecoding` with `hosta_inspection` contract |
 | core/config.py | 🟡 Partial in `src/OpenHosta/core/config.ts` | Default model/pipeline wiring + `.env` loader done; depends on placeholder model/pipeline behavior |
 | core/type_converter.py | 🟡 Partial in `src/OpenHosta/core/typeConverter.ts` | Flexible `TypeDescriptor` runtime schema + conversion helpers; lacks Python's automatic `inspect` integration |
+| core/analizer.py | 🟡 Partial in `src/OpenHosta/core/analyzer.ts` | `setHostaSignature`, `hostaAnalyze`, and encoding helpers exist; automatic AST/introspection TBD |
 | models/OpenAICompatible.py | 🟡 Skeleton in `src/OpenHosta/models/OpenAICompatibleModel.ts` | Holds model metadata/API params; API calls & inspection logs still TODO |
 | pipelines/simple_pipeline.py | 🟡 Skeleton in `src/OpenHosta/pipelines/simplePipeline.ts` | Structure + prompt references exist; `push/pull` logic not yet ported |
 | core/* (analizer, inspection, pydantic_proxy) | 🔄 Not started | Need translation strategies (Jinja inspection, runtime validation) |
@@ -19,7 +20,7 @@
 - **Environment overrides:** Python forwards `*args/**kargs` to `jinja2.Template`. The JS port instead accepts an optional `env` (a `nunjucks.Environment`). Additional template-level toggles must be provided via that environment instance until we see concrete use cases.
 - **Inspection hooks:** Python functions receive rich objects via attributes. The TS helpers (`printLastPrompt`, `printLastDecoding`) rely on duck typing and will log fallback messages when the expected methods are missing; stricter typings may emerge once models/pipelines are ported.
 - **Core config & defaults:** `.env` discovery matches Python, but the default pipeline/model are placeholders. They accept metadata and API parameters yet do not execute remote calls; the structure is in place so the rest of the system can attach behavior later.
-- **Type conversion:** Python relies on actual runtime types (`typing`, enums, dataclasses, pydantic). JS exposes a `TypeDescriptor` DSL so analyzers can describe the expected shape explicitly. It currently covers primitives, arrays/tuples/dicts, unions, enums, and custom parsers; bridging it with real TypeScript types will happen when the analyzer is ported.
+- **Type conversion & analysis:** Python relies on actual runtime types (`typing`, enums, dataclasses, pydantic). JS exposes a `TypeDescriptor` DSL and `setHostaSignature` so callers can describe shapes manually until AST-based inspection is ported. Automatic extraction of annotations/docstrings still to come.
 - **Pipeline execution:** `OneTurnConversationPipeline` currently throws for `push/pull`. The scaffolding ensures config references remain consistent while we translate the full encode/analyse flow.
 
 ## Action Plan
@@ -27,7 +28,7 @@
    - Flesh out unit tests comparing Python & TS outputs for representative prompts (JSON mode, conditionals, whitespace).
    - Decide whether to expose helpers for registering filters/tests so higher layers can stay declarative.
 2. **Type conversion integration**
-   - Port `core/analizer` & `core/inspection` so they emit `TypeDescriptor` objects automatically.
+   - Finish `core/analizer` & port `core/inspection` so signatures/descriptors can be inferred automatically (without manual `setHostaSignature`).
    - Wire `OneTurnConversationPipeline.pull` to consume descriptors and feed `typeReturnedData`, ensuring parity with Python’s `type_returned_data`.
 3. **Core helper completion**
    - Implement `core/pydantic_proxy` equivalents (probably via Zod/TypeBox) so pipelines can validate structured responses.

@@ -1,6 +1,16 @@
 import JSON5 from "json5";
+import util from "node:util";
 
 export type PrimitiveDescriptor = "any" | "string" | "number" | "integer" | "boolean" | "null";
+
+export const BASIC_TYPE_SET: Set<PrimitiveDescriptor> = new Set([
+  "any",
+  "string",
+  "number",
+  "integer",
+  "boolean",
+  "null"
+]);
 
 export interface ArrayDescriptor {
   kind: "array";
@@ -313,6 +323,51 @@ export function describeTypeAsSchema(descriptor: TypeDescriptor): JsonSchema {
   }
 }
 
+export function describeTypeAsPython(descriptor?: TypeDescriptor): string | undefined {
+  if (!descriptor) {
+    return undefined;
+  }
+  if (typeof descriptor === "string") {
+    if (descriptor === "integer") {
+      return "int";
+    }
+    return descriptor;
+  }
+
+  switch (descriptor.kind) {
+    case "array":
+      return `list[${descriptor.items ? describeTypeAsPython(descriptor.items) ?? "Any" : "Any"}]`;
+    case "tuple":
+      return `tuple[${descriptor.items
+        .map((item) => describeTypeAsPython(item) ?? "Any")
+        .join(", ")}${descriptor.rest ? ", ..."+(describeTypeAsPython(descriptor.rest) ?? "Any") : ""}]`;
+    case "dict":
+      return `dict[str, ${describeTypeAsPython(descriptor.value) ?? "Any"}]`;
+    case "object":
+      if (descriptor.properties) {
+        const props = Object.entries(descriptor.properties)
+          .map(([k, v]) => `    ${k}: ${describeTypeAsPython(v) ?? "Any"}`)
+          .join("\n");
+        return `class AnonObject:\n${props || "    ..."}\n`;
+      }
+      return "dict[str, Any]";
+    case "enum":
+      return `Enum(${descriptor.values.map((v) => JSON.stringify(v)).join(", ")})`;
+    case "union":
+      return `typing.Union[${descriptor.anyOf
+        .map((item) => describeTypeAsPython(item) ?? "Any")
+        .join(", ")}]`;
+    case "literal":
+      return `typing.Literal[${JSON.stringify(descriptor.value)}]`;
+    case "class":
+      return descriptor.ctor.name ?? "CustomClass";
+    case "custom":
+      return "CustomType";
+    default:
+      return undefined;
+  }
+}
+
 export function niceTypeName(descriptor: TypeDescriptor): string {
   if (typeof descriptor === "string") {
     return descriptor;
@@ -343,5 +398,28 @@ export function niceTypeName(descriptor: TypeDescriptor): string {
       return "custom";
     default:
       return "unknown";
+  }
+}
+
+export function stringifyValue(value: unknown): string {
+  if (typeof value === "string") {
+    return JSON.stringify(value);
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (value === null) {
+    return "None";
+  }
+  if (typeof value === "undefined") {
+    return "undefined";
+  }
+  if (typeof value === "bigint") {
+    return `${value}n`;
+  }
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return util.inspect(value, { depth: 2 });
   }
 }

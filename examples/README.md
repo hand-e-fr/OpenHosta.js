@@ -10,3 +10,5 @@ Run from the repo root (`OpenHosta.js`). Each npm script rebuilds before executi
   Demonstrates the `TypeDescriptor` DSL plus `typeReturnedData`, schema rendering, and union parsing.
 - `loggerExample.js` → `npm run example:logger`  
   Builds a mock `hosta_inspection` payload to showcase `printLastPrompt` and `printLastDecoding`.
+- `analyzerExample.js` → `npm run example:analyzer`  
+  Shows `setHostaSignature`, `hostaAnalyze`, `encodeFunction`, and response coercion.
