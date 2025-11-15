@@ -61,38 +61,45 @@ function recursiveFindDotenv(start: string): string | null {
   return recursiveFindDotenv(parent);
 }
 
-function warnMissingEnvFile(searchPath: string, foundPath: string | null): boolean {
+function warnMissingEnvFile(searchPath: string, foundPath: string | null, verbose = false): boolean {
+  // Only show warnings if OPENHOSTA_VERBOSE=true or verbose flag is set
+  const shouldWarn = verbose || process.env.OPENHOSTA_VERBOSE === "true";
+
   if (foundPath === null) {
-    console.error(`[OpenHosta/CONFIG_WARNING] .env file not found at ${searchPath} or in any parent directory.`);
-    console.error(
-      `[OpenHosta/CONFIG_ERROR] .env file not found. It is a good practice to store your credentials in a .env file.\n` +
-        `Example .env file:\n` +
-        `------------------\n` +
-        `OPENHOSTA_DEFAULT_MODEL_API_KEY="your_api_key"\n` +
-        `OPENHOSTA_DEFAULT_MODEL_BASE_URL="https://api.openai.com/v1"\n` +
-        `OPENHOSTA_DEFAULT_MODEL_NAME="gpt-5"\n` +
-        `OPENHOSTA_DEFAULT_MODEL_TEMPERATURE=0.7\n` +
-        `OPENHOSTA_DEFAULT_MODEL_TOP_P=0.9\n` +
-        `OPENHOSTA_DEFAULT_MODEL_MAX_TOKENS=2048\n` +
-        `OPENHOSTA_DEFAULT_MODEL_SEED=42\n` +
-        `------------------`
-    );
+    if (shouldWarn) {
+      console.error(`[OpenHosta/CONFIG_WARNING] .env file not found at ${searchPath} or in any parent directory.`);
+      console.error(
+        `[OpenHosta/CONFIG_ERROR] .env file not found. It is a good practice to store your credentials in a .env file.\n` +
+          `Example .env file:\n` +
+          `------------------\n` +
+          `OPENHOSTA_DEFAULT_MODEL_API_KEY="your_api_key"\n` +
+          `OPENHOSTA_DEFAULT_MODEL_BASE_URL="https://api.openai.com/v1"\n` +
+          `OPENHOSTA_DEFAULT_MODEL_NAME="gpt-5"\n` +
+          `OPENHOSTA_DEFAULT_MODEL_TEMPERATURE=0.7\n` +
+          `OPENHOSTA_DEFAULT_MODEL_TOP_P=0.9\n` +
+          `OPENHOSTA_DEFAULT_MODEL_MAX_TOKENS=2048\n` +
+          `OPENHOSTA_DEFAULT_MODEL_SEED=42\n` +
+          `------------------`
+      );
+    }
     return false;
   }
-  console.error(
-    `[OpenHosta/CONFIG_WARNING] .env file not found at ${searchPath}. Using ${foundPath} instead.`
-  );
+  if (shouldWarn) {
+    console.error(
+      `[OpenHosta/CONFIG_WARNING] .env file not found at ${searchPath}. Using ${foundPath} instead.`
+    );
+  }
   return true;
 }
 
-export function reloadDotenv(override = true, dotenvPath = "./.env"): boolean {
+export function reloadDotenv(override = true, dotenvPath = "./.env", verbose = false): boolean {
   const absolutePath = path.resolve(dotenvPath);
   const foundPath = recursiveFindDotenv(path.dirname(absolutePath));
 
   let finalPath = absolutePath;
 
   if (absolutePath !== foundPath) {
-    if (!warnMissingEnvFile(absolutePath, foundPath)) {
+    if (!warnMissingEnvFile(absolutePath, foundPath, verbose)) {
       return false;
     }
     if (foundPath) {
@@ -102,7 +109,9 @@ export function reloadDotenv(override = true, dotenvPath = "./.env"): boolean {
 
   const result = dotenvConfig({ path: finalPath, override });
   if (result.error) {
-    console.error(`[OpenHosta/CONFIG_ERROR] Failed to load .env file at ${finalPath}.`);
+    if (verbose || process.env.OPENHOSTA_VERBOSE === "true") {
+      console.error(`[OpenHosta/CONFIG_ERROR] Failed to load .env file at ${finalPath}.`);
+    }
     return false;
   }
 

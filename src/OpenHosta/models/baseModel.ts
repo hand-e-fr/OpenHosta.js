@@ -73,4 +73,12 @@ export abstract class Model {
   print_last_prompt(_inspection: unknown): void {
     // Optional override in subclasses.
   }
+
+  get used_tokens(): number {
+    return this._used_tokens;
+  }
+
+  get nb_requests(): number {
+    return this._nb_requests;
+  }
 }

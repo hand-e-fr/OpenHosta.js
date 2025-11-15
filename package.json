@@ -16,6 +16,11 @@
     "example:type-conversion": "npm run build && node examples/typeConversionExample.js",
     "example:logger": "npm run build && node examples/loggerExample.js",
     "example:analyzer": "npm run build && node examples/analyzerExample.js",
+    "example:mock": "npm run build && node examples/mockExample.js",
+    "example:ask": "npm run build && node examples/askExample.js",
+    "example:emulate": "npm run build && node examples/emulateExample.js",
+    "example:closure": "npm run build && node examples/closureExample.js",
+    "example:pipeline": "npm run build && node examples/pipelineExample.js",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "test": "node --test"
@@ -29,6 +34,7 @@
     "@types/json5": "^0.0.30",
     "@types/node": "^24.10.1",
     "@types/nunjucks": "^3.2.6",
+    "tsx": "^4.20.6",
     "typescript": "^5.4.0"
   }
 }

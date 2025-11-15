@@ -58,10 +58,13 @@ export async function ask(
 
   messages.push({ role: "user", content: userMessageContent });
 
-  const llmArgs = {
-    ...(options.forceLlmArgs ?? {}),
-    force_json_output: options.forceJsonOutput ?? false
+  const llmArgs: Record<string, unknown> = {
+    ...(options.forceLlmArgs ?? {})
   };
+
+  if (options.forceJsonOutput) {
+    llmArgs.force_json_output = true;
+  }
 
   const response = await model.apiCall(messages, llmArgs);
   return response.choices?.[0]?.message?.content;
