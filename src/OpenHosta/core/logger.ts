@@ -1,16 +1,6 @@
-type AnyRecord = Record<string, unknown>;
+import type { HostaInspection } from "./inspection.js";
 
-export interface HostaInspection {
-  model?: {
-    model_name?: string;
-    base_url?: string;
-    print_last_prompt?: (inspection: HostaInspection) => void;
-  } & AnyRecord;
-  pipeline?: {
-    print_last_decoding?: (inspection: HostaInspection) => void;
-  } & AnyRecord;
-  [key: string]: unknown;
-}
+type AnyRecord = Record<string, unknown>;
 
 export type HostaInspectable = {
   hosta_inspection?: HostaInspection;
