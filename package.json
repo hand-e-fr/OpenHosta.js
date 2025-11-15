@@ -12,6 +12,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "example:meta-prompt": "npm run build && node examples/metaPromptExample.js",
+    "example:config": "npm run build && node examples/configExample.js",
+    "example:type-conversion": "npm run build && node examples/typeConversionExample.js",
+    "example:logger": "npm run build && node examples/loggerExample.js",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "test": "node --test"

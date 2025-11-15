@@ -3,13 +3,12 @@ A lightweight library integrating LLM natively into JavaScript
 
 ## Example
 
-```bash
-cd OpenHosta.js
-npm install
-npm run example:meta-prompt
-```
+Examples live in `examples/` and run via npm scripts (each re-builds before execution):
 
-The script (`examples/metaPromptExample.js`) compiles the TypeScript sources, instantiates `MetaPrompt`, renders a simple greeting, and then renders the shared `EMULATE_META_PROMPT` with sample variables so you can inspect the final text.
+- `npm run example:meta-prompt` – Renders the base `MetaPrompt` and the shared `EMULATE_META_PROMPT`.
+- `npm run example:config` – Creates a temporary `.env` file, calls `reloadDotenv`, and prints the resulting default model/pipeline configuration.
+- `npm run example:type-conversion` – Demonstrates `typeReturnedData`, `describeTypeAsSchema`, and unions with the new `TypeDescriptor` DSL.
+- `npm run example:logger` – Builds a synthetic `hosta_inspection` payload to show `printLastPrompt` and `printLastDecoding` output.
 
 ## Configuration
 
