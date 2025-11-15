@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "transform": "./dist/transformer/hostaTransformer.js",
+        "type": "program",
+        "transformProgram": true
+      }
+    ]
+  }
+}

@@ -11,6 +11,9 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build:transformer": "npm run build && node dist/transformer/build.js",
+    "build:transformer:verbose": "npm run build && node dist/transformer/build.js --verbose",
+    "build:transformer:metadata": "npm run build && node dist/transformer/build.js --metadata",
     "example:meta-prompt": "npm run build && node examples/metaPromptExample.js",
     "example:config": "npm run build && node examples/configExample.js",
     "example:type-conversion": "npm run build && node examples/typeConversionExample.js",
@@ -21,6 +24,8 @@
     "example:emulate": "npm run build && node examples/emulateExample.js",
     "example:closure": "npm run build && node examples/closureExample.js",
     "example:pipeline": "npm run build && node examples/pipelineExample.js",
+    "example:python-style": "npm run build:transformer && node examples/pythonStyleExample.js",
+    "test:transformer": "npm run build && node examples/transformerTest.js",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "test": "node --test"
